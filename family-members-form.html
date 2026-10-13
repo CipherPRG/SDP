@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Family Members</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --card: #ffffff;
+    --text: #1c2333;
+    --muted: #6b7489;
+    --border: #dde2ec;
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --error: #dc2626;
+    --error-bg: #fef2f2;
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 32px 16px;
+    line-height: 1.5;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  header h1 { font-size: 1.75rem; font-weight: 700; }
+  header p { color: var(--muted); margin-top: 4px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+  .card h2 { font-size: 1.1rem; margin-bottom: 20px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 20px;
+  }
+  .full { grid-column: 1 / -1; }
+
+  .field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .field label .req { color: var(--error); }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 0.95rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text);
+    transition: border-color 0.15s;
+  }
+  .field textarea { resize: vertical; min-height: 70px; }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  .field.invalid input,
+  .field.invalid select,
+  .field.invalid textarea {
+    border-color: var(--error);
+  }
+  .hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+  .error-msg {
+    font-size: 0.78rem;
+    color: var(--error);
+    margin-top: 4px;
+    display: none;
+  }
+  .field.invalid .error-msg { display: block; }
+  .field.invalid .hint { display: none; }
+  #pan, #ifsc { text-transform: uppercase; }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+  button {
+    font: inherit;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-ghost { background: #fff; border-color: var(--border); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--muted); }
+
+  /* Members list */
+  .members { margin-top: 32px; }
+  .members-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .members-head h2 { font-size: 1.1rem; }
+  .count {
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 2px 10px;
+    border-radius: 999px;
+  }
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 32px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+  }
+  .member-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .member {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    animation: pop 0.3s ease;
+  }
+  .member-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--primary);
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .member-top h3 { font-size: 1rem; }
+  .member-top span { font-size: 0.8rem; color: var(--muted); }
+  .member dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 0.85rem; }
+  .member dt { color: var(--muted); }
+  .member dd { font-weight: 500; word-break: break-all; }
+  .remove {
+    margin-top: 14px;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #fecaca;
+    color: var(--error);
+    padding: 7px;
+    font-size: 0.85rem;
+  }
+  .remove:hover { border-color: var(--error); }
+
+  /* Success toast */
+  .toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    background: #fff;
+    border: 1px solid var(--success);
+    color: var(--success);
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transform: translateY(-20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast .tick {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--success);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 0.8rem;
+  }
+
+  @keyframes pop {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .card { padding: 20px; }
+    .actions { flex-direction: column-reverse; }
+    .actions button { width: 100%; }
+    .toast { left: 16px; right: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Family Members</h1>
+    <p>Add details for each family member. Fields marked <span style="color:var(--error)">*</span> are required.</p>
+  </header>
+
+  <form id="memberForm" class="card" novalidate>
+    <h2>Add a member</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="name">Full Name <span class="req">*</span></label>
+        <input id="name" type="text" maxlength="50" placeholder="e.g. Ravi Kumar" />
+        <p class="hint">Letters and spaces only, 2–50 characters</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="relation">Relationship <span class="req">*</span></label>
+        <select id="relation">
+          <option value="">Select relationship</option>
+          <option>Self</option><option>Spouse</option><option>Father</option>
+          <option>Mother</option><option>Son</option><option>Daughter</option>
+          <option>Brother</option><option>Sister</option><option>Other</option>
+        </select>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="dob">Date of Birth <span class="req">*</span></label>
+        <input id="dob" type="date" />
+        <p class="hint">Cannot be a future date</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="gender">Gender <span class="req">*</span></label>
+        <select id="gender">
+          <option value="">Select gender</option>
+          <option>Male</option><option>Female</option><option>Other</option>
+        </select>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="pan">PAN Number <span class="req">*</span></label>
+        <input id="pan" type="text" maxlength="10" placeholder="ABCPE1234F" />
+        <p class="hint">Format: 5 letters, 4 digits, 1 letter</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="aadhaar">Aadhaar Number <span class="req">*</span></label>
+        <input id="aadhaar" type="text" inputmode="numeric" maxlength="14" placeholder="2345 6789 0123" />
+        <p class="hint">12 digits, cannot start with 0 or 1</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="mobile">Mobile Number <span class="req">*</span></label>
+        <input id="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="9876543210" />
+        <p class="hint">10 digits, starting with 6–9</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="name@example.com" />
+        <p class="hint">Optional</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="occupation">Occupation <span class="req">*</span></label>
+        <select id="occupation">
+          <option value="">Select occupation</option>
+          <option>Salaried</option><option>Self-employed</option><option>Business</option>
+          <option>Student</option><option>Homemaker</option><option>Retired</option>
+          <option>Unemployed</option>
+        </select>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="income">Annual Income (₹)</label>
+        <input id="income" type="number" min="0" step="1000" placeholder="e.g. 600000" />
+        <p class="hint">Required if Salaried / Self-employed / Business</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field full">
+        <label for="address">Address <span class="req">*</span></label>
+        <textarea id="address" maxlength="200" placeholder="House no., street, city"></textarea>
+        <p class="hint">10–200 characters</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="pincode">PIN Code <span class="req">*</span></label>
+        <input id="pincode" type="text" inputmode="numeric" maxlength="6" placeholder="570008" />
+        <p class="hint">6 digits, cannot start with 0</p>
+        <p class="error-msg"></p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="reset" class="btn-ghost">Clear</button>
+      <button type="submit" class="btn-primary">+ Add Member</button>
+    </div>
+  </form>
+
+  <section class="members">
+    <div class="members-head">
+      <h2>Added Members</h2>
+      <span class="count" id="count">0</span>
+    </div>
+    <div id="empty" class="empty">No members added yet.</div>
+    <div id="memberList" class="member-list"></div>
+  </section>
+</div>
+
+<div class="toast" id="toast"><span class="tick">✓</span><span id="toastMsg"></span></div>
+
+<script>
+  const form = document.getElementById("memberForm");
+  const members = [];
+  const $ = (id) => document.getElementById(id);
+
+  // Live input cleanup
+  $("pan").addEventListener("input", (e) => {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  });
+  ["mobile", "pincode"].forEach((id) =>
+    $(id).addEventListener("input", (e) => (e.target.value = e.target.value.replace(/\D/g, "")))
+  );
+  $("aadhaar").addEventListener("input", (e) => {
+    const d = e.target.value.replace(/\D/g, "").slice(0, 12);
+    e.target.value = d.replace(/(\d{4})(?=\d)/g, "$1 ");
+  });
+  $("dob").max = new Date().toISOString().split("T")[0];
+
+  function age(dob) {
+    const b = new Date(dob), t = new Date();
+    let a = t.getFullYear() - b.getFullYear();
+    if (t < new Date(t.getFullYear(), b.getMonth(), b.getDate())) a--;
+    return a;
+  }
+
+  // Each validator returns an error string, or "" if valid
+  const rules = {
+    name: (v) =>
+      !v ? "Name is required" :
+      !/^[A-Za-z][A-Za-z .'-]{1,49}$/.test(v) ? "Use letters and spaces only (2–50 characters)" : "",
+    relation: (v) => {
+      if (!v) return "Select a relationship";
+      if (v === "Self" && members.some((m) => m.relation === "Self")) return "'Self' has already been added";
+      return "";
+    },
+    dob: (v) => {
+      if (!v) return "Date of birth is required";
+      const d = new Date(v);
+      if (d > new Date()) return "Date of birth cannot be in the future";
+      if (age(v) > 120) return "Please enter a valid date of birth";
+      return "";
+    },
+    gender: (v) => (!v ? "Select a gender" : ""),
+    pan: (v) => {
+      if (!v) return "PAN is required";
+      if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(v)) return "Invalid PAN. Format: ABCPE1234F";
+      if (v[3] !== "P") return "4th character must be 'P' for an individual PAN";
+      if (members.some((m) => m.pan === v)) return "This PAN is already added";
+      return "";
+    },
+    aadhaar: (v) => {
+      const d = v.replace(/\s/g, "");
+      if (!d) return "Aadhaar is required";
+      if (!/^[2-9][0-9]{11}$/.test(d)) return "Must be 12 digits and not start with 0 or 1";
+      if (members.some((m) => m.aadhaar === d)) return "This Aadhaar is already added";
+      return "";
+    },
+    mobile: (v) =>
+      !v ? "Mobile number is required" :
+      !/^[6-9][0-9]{9}$/.test(v) ? "Enter a valid 10-digit number starting with 6–9" : "",
+    email: (v) =>
+      v && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? "Enter a valid email address" : "",
+    occupation: (v) => (!v ? "Select an occupation" : ""),
+    income: (v) => {
+      const earning = ["Salaried", "Self-employed", "Business"].includes($("occupation").value);
+      if (earning && v === "") return "Income is required for this occupation";
+      if (v !== "" && (Number(v) < 0 || Number(v) > 1e10)) return "Enter a valid amount";
+      return "";
+    },
+    address: (v) =>
+      !v ? "Address is required" :
+      v.length < 10 ? "Address must be at least 10 characters" : "",
+    pincode: (v) =>
+      !v ? "PIN code is required" :
+      !/^[1-9][0-9]{5}$/.test(v) ? "Enter a valid 6-digit PIN code" : "",
+  };
+
+  function validateField(id) {
+    const el = $(id);
+    const field = el.closest(".field");
+    const msg = rules[id](el.value.trim());
+    field.classList.toggle("invalid", !!msg);
+    field.querySelector(".error-msg").textContent = msg;
+    return !msg;
+  }
+
+  // Validate on blur, re-validate while typing once a field is marked invalid
+  Object.keys(rules).forEach((id) => {
+    $(id).addEventListener("blur", () => validateField(id));
+    $(id).addEventListener("input", () => {
+      if ($(id).closest(".field").classList.contains("invalid")) validateField(id);
+    });
+  });
+  $("occupation").addEventListener("change", () => {
+    if ($("income").closest(".field").classList.contains("invalid")) validateField("income");
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const results = Object.keys(rules).map(validateField);
+    if (results.includes(false)) {
+      form.querySelector(".invalid input, .invalid select, .invalid textarea").focus();
+      return;
+    }
+    const m = {
+      id: Date.now(),
+      name: $("name").value.trim(),
+      relation: $("relation").value,
+      dob: $("dob").value,
+      gender: $("gender").value,
+      pan: $("pan").value,
+      aadhaar: $("aadhaar").value.replace(/\s/g, ""),
+      mobile: $("mobile").value,
+      email: $("email").value.trim(),
+      occupation: $("occupation").value,
+      income: $("income").value,
+      address: $("address").value.trim(),
+      pincode: $("pincode").value,
+    };
+    members.push(m);
+    render();
+    form.reset();
+    document.querySelectorAll(".field.invalid").forEach((f) => f.classList.remove("invalid"));
+    showToast(`${m.name} added successfully`);
+    $("name").focus();
+  });
+
+  form.addEventListener("reset", () =>
+    document.querySelectorAll(".field.invalid").forEach((f) => f.classList.remove("invalid"))
+  );
+
+  function render() {
+    $("count").textContent = members.length;
+    $("empty").style.display = members.length ? "none" : "block";
+    $("memberList").innerHTML = members.map((m) => `
+      <div class="member">
+        <div class="member-top">
+          <div class="avatar">${esc(m.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase())}</div>
+          <div><h3>${esc(m.name)}</h3><span>${m.relation} · ${m.gender} · ${age(m.dob)} yrs</span></div>
+        </div>
+        <dl>
+          <dt>PAN</dt><dd>${m.pan}</dd>
+          <dt>Aadhaar</dt><dd>XXXX XXXX ${m.aadhaar.slice(-4)}</dd>
+          <dt>Mobile</dt><dd>${m.mobile}</dd>
+          ${m.email ? `<dt>Email</dt><dd>${esc(m.email)}</dd>` : ""}
+          <dt>Occupation</dt><dd>${m.occupation}</dd>
+          ${m.income ? `<dt>Income</dt><dd>₹${Number(m.income).toLocaleString("en-IN")}</dd>` : ""}
+          <dt>PIN</dt><dd>${m.pincode}</dd>
+        </dl>
+        <button class="remove" onclick="removeMember(${m.id})">Remove</button>
+      </div>`).join("");
+  }
+
+  function removeMember(id) {
+    const i = members.findIndex((m) => m.id === id);
+    if (i > -1) members.splice(i, 1);
+    render();
+  }
+
+  function esc(s) {
+    return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  let toastTimer;
+  function showToast(text) {
+    $("toastMsg").textContent = text;
+    $("toast").classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => $("toast").classList.remove("show"), 2800);
+  }
+</script>
+</body>
+</html>
