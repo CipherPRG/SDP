@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Family Members</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<script src="script.js" defer></script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Family Members</h1>
+    <p>Add details for each family member. Fields marked <span class="req">*</span> are required.</p>
+  </header>
+
+  <form id="memberForm" class="card" novalidate>
+    <h2>Add a member</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="name">Full Name <span class="req">*</span></label>
+        <input id="name" type="text" maxlength="50" placeholder="e.g. Ravi Kumar" />
+        <p class="hint">Letters and spaces only, 2–50 characters</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="relation">Relationship <span class="req">*</span></label>
+        <select id="relation">
+          <option value="">Select relationship</option>
+          <option>Self</option><option>Spouse</option><option>Father</option>
+          <option>Mother</option><option>Son</option><option>Daughter</option>
+          <option>Brother</option><option>Sister</option><option>Other</option>
+        </select>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="dob">Date of Birth <span class="req">*</span></label>
+        <input id="dob" type="date" />
+        <p class="hint">Cannot be a future date</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="gender">Gender <span class="req">*</span></label>
+        <select id="gender">
+          <option value="">Select gender</option>
+          <option>Male</option><option>Female</option><option>Other</option>
+        </select>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="pan">PAN Number <span class="req">*</span></label>
+        <input id="pan" type="text" maxlength="10" placeholder="ABCPE1234F" />
+        <p class="hint">Format: 5 letters, 4 digits, 1 letter</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="aadhaar">Aadhaar Number <span class="req">*</span></label>
+        <input id="aadhaar" type="text" inputmode="numeric" maxlength="14" placeholder="2345 6789 0123" />
+        <p class="hint">12 digits, cannot start with 0 or 1</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="mobile">Mobile Number <span class="req">*</span></label>
+        <input id="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="9876543210" />
+        <p class="hint">10 digits, starting with 6–9</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="name@example.com" />
+        <p class="hint">Optional</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="occupation">Occupation <span class="req">*</span></label>
+        <select id="occupation">
+          <option value="">Select occupation</option>
+          <option>Salaried</option><option>Self-employed</option><option>Business</option>
+          <option>Student</option><option>Homemaker</option><option>Retired</option>
+          <option>Unemployed</option>
+        </select>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="income">Annual Income (₹)</label>
+        <input id="income" type="number" min="0" step="1000" placeholder="e.g. 600000" />
+        <p class="hint">Required if Salaried / Self-employed / Business</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field full">
+        <label for="address">Address <span class="req">*</span></label>
+        <textarea id="address" maxlength="200" placeholder="House no., street, city"></textarea>
+        <p class="hint">10–200 characters</p>
+        <p class="error-msg"></p>
+      </div>
+
+      <div class="field">
+        <label for="pincode">PIN Code <span class="req">*</span></label>
+        <input id="pincode" type="text" inputmode="numeric" maxlength="6" placeholder="570008" />
+        <p class="hint">6 digits, cannot start with 0</p>
+        <p class="error-msg"></p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="reset" class="btn-ghost">Clear</button>
+      <button type="submit" class="btn-primary">+ Add Member</button>
+    </div>
+  </form>
+
+  <section class="members">
+    <div class="members-head">
+      <h2>Added Members</h2>
+      <span class="count" id="count">0</span>
+    </div>
+    <div id="empty" class="empty">No members added yet.</div>
+    <div id="memberList" class="member-list"></div>
+  </section>
+</div>
+
+<div class="toast" id="toast"><span class="tick">✓</span><span id="toastMsg"></span></div>
+</body>
+</html>
