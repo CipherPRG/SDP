@@ -1,0 +1,13 @@
+from flask import Flask, render_template  # type: ignore
+
+app = Flask(__name__)
+
+
+# Route: Family Members form
+@app.get("/")
+def home():
+    return render_template("index.html")
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)

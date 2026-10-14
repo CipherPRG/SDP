@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Family Members</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css" />
-<script src="script.js" defer></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
 <div class="container">
@@ -21,7 +21,7 @@
       <div class="field">
         <label for="name">Full Name <span class="req">*</span></label>
         <input id="name" type="text" maxlength="50" placeholder="e.g. Ravi Kumar" />
-        <p class="hint">Letters and spaces only, 2–50 characters</p>
+        <p class="hint">Letters and spaces only, 2â€“50 characters</p>
         <p class="error-msg"></p>
       </div>
 
@@ -69,7 +69,7 @@
       <div class="field">
         <label for="mobile">Mobile Number <span class="req">*</span></label>
         <input id="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="9876543210" />
-        <p class="hint">10 digits, starting with 6–9</p>
+        <p class="hint">10 digits, starting with 6â€“9</p>
         <p class="error-msg"></p>
       </div>
 
@@ -92,7 +92,7 @@
       </div>
 
       <div class="field">
-        <label for="income">Annual Income (₹)</label>
+        <label for="income">Annual Income (â‚¹)</label>
         <input id="income" type="number" min="0" step="1000" placeholder="e.g. 600000" />
         <p class="hint">Required if Salaried / Self-employed / Business</p>
         <p class="error-msg"></p>
@@ -101,7 +101,7 @@
       <div class="field full">
         <label for="address">Address <span class="req">*</span></label>
         <textarea id="address" maxlength="200" placeholder="House no., street, city"></textarea>
-        <p class="hint">10–200 characters</p>
+        <p class="hint">10â€“200 characters</p>
         <p class="error-msg"></p>
       </div>
 
@@ -129,6 +129,6 @@
   </section>
 </div>
 
-<div class="toast" id="toast"><span class="tick">✓</span><span id="toastMsg"></span></div>
+<div class="toast" id="toast"><span class="tick">âœ“</span><span id="toastMsg"></span></div>
 </body>
 </html>
